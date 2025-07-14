@@ -1,0 +1,106 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Order Processing System using Go and SAM
+Globals:
+  Function:
+    Runtime: go1.x
+    Timeout: 30
+    MemorySize: 128
+    Architectures:
+    - x86_64
+Resources:
+  OrderQueue:
+    Type: AWS::SQS::Queue
+  OrdersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAYPERREQUEST
+      AttributeDefinitions:
+      - AttributeName: orderId
+        AttributeType: S
+      KeySchema:
+      - AttributeName: orderId
+        KeyType: HASH
+  ReceiptsBucket:
+    Type: AWS::S3::Bucket
+  ReceiveOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: receive-order
+      Handler: main
+      CodeUri: ReceiveOrderFunction
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /orders
+            Method: post
+      Environment:
+        Variables:
+          QUEUE_URL:
+            Fn::GetAtt:
+            - OrderQueue
+            - QueueUrl
+      Policies:
+      - SQSSendMessagePolicy:
+          QueueName:
+            Fn::GetAtt:
+            - OrderQueue
+            - QueueName
+    Metadata:
+      SamResourceId: ReceiveOrderFunction
+  ProcessOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: process-order
+      Handler: main
+      CodeUri: ProcessOrderFunction
+      Events:
+        SQSTrigger:
+          Type: SQS
+          Properties:
+            Queue:
+              Fn::GetAtt:
+              - OrderQueue
+              - Arn
+      Environment:
+        Variables:
+          TABLE_NAME: OrdersTable
+          BUCKET_NAME:
+            Ref: ReceiptsBucket
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: OrdersTable
+      - S3CrudPolicy:
+          BucketName:
+            Ref: ReceiptsBucket
+    Metadata:
+      SamResourceId: ProcessOrderFunction
+  GetReceiptFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-receipt
+      Handler: main
+      CodeUri: GetReceiptFunction
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /receipt/{orderId}
+            Method: get
+      Environment:
+        Variables:
+          TABLE_NAME:
+            Ref: OrdersTable
+          BUCKET_NAME:
+            Ref: ReceiptsBucket
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: OrdersTable
+      - S3ReadPolicy:
+          BucketName:
+            Ref: ReceiptsBucket
+    Metadata:
+      SamResourceId: GetReceiptFunction
