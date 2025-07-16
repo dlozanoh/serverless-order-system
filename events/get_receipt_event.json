@@ -1,0 +1,8 @@
+{
+  "pathParameters": {
+    "orderId": "12345"
+  },
+  "httpMethod": "GET",
+  "resource": "/receipt/{orderId}",
+  "path": "/receipt/12345"
+}

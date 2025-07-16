@@ -2,25 +2,17 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless Order Processing System using Go and SAM
 
-Globals:
-  Function:
-    Runtime: go1.x
-    Timeout: 30
-    MemorySize: 128
-    Architectures:
-      - x86_64
-
 Resources:
 
-## Resources
-## Queues, Tables, and Buckets
+  ## Queues, Tables, and Buckets
   OrderQueue:
     Type: AWS::SQS::Queue
 
   OrdersTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      BillingMode: PAYPERREQUEST
+      TableName: OrdersTable
+      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: orderId
           AttributeType: S
@@ -31,14 +23,19 @@ Resources:
   ReceiptsBucket:
     Type: AWS::S3::Bucket
 
-## Functions
+  ## Functions
 
   ReceiveOrderFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: receive-order
-      Handler: main
-      CodeUri: cmd/receive_order/
+      Runtime: provided.al2
+      MemorySize: 128
+      Timeout: 30
+      Architectures: 
+        - arm64
+      Handler: bootstrap      
+      CodeUri: .
       Events:
         ApiEvent:
           Type: Api
@@ -56,8 +53,13 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: process-order
-      Handler: main
-      CodeUri: cmd/process_order/
+      Runtime: provided.al2
+      MemorySize: 128
+      Timeout: 30
+      Architectures:
+        - arm64
+      Handler: bootstrap
+      CodeUri: .
       Events:
         SQSTrigger:
           Type: SQS
@@ -77,8 +79,13 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: get-receipt
-      Handler: main
-      CodeUri: cmd/get_receipt/
+      Runtime: provided.al2
+      MemorySize: 128
+      Timeout: 30
+      Architectures:
+        - arm64
+      Handler: bootstrap
+      CodeUri: .
       Events:
         ApiEvent:
           Type: Api

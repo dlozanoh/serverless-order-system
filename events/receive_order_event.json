@@ -1,0 +1,9 @@
+{
+  "body": "{\"orderId\": \"12345\", \"customerName\": \"Alice\"}",
+  "httpMethod": "POST",
+  "resource": "/orders",
+  "path": "/orders",
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}

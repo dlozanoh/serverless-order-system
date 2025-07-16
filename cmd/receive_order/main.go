@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 )
 
 type Order struct {
@@ -17,10 +18,17 @@ type Order struct {
 }
 
 var (
-	sess      = session.Must(session.NewSession())
-	sqsClient = sqs.New(sess)
+	sqsClient *sqs.Client
 	queueURL  = os.Getenv("QUEUE_URL")
 )
+
+func init() {
+	cfg, err := config.LoadDefaultConfig(context.Background())
+	if err != nil {
+		panic("unable to load SDK config, " + err.Error())
+	}
+	sqsClient = sqs.NewFromConfig(cfg)
+}
 
 func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var order Order
@@ -29,7 +37,7 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "Invalid input"}, nil
 	}
 	body, _ := json.Marshal(order)
-	_, err = sqsClient.SendMessage(&sqs.SendMessageInput{
+	_, err = sqsClient.SendMessage(ctx, &sqs.SendMessageInput{
 		QueueUrl:    aws.String(queueURL),
 		MessageBody: aws.String(string(body)),
 	})

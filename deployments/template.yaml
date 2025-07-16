@@ -1,20 +1,13 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless Order Processing System using Go and SAM
-Globals:
-  Function:
-    Runtime: go1.x
-    Timeout: 30
-    MemorySize: 128
-    Architectures:
-    - x86_64
 Resources:
   OrderQueue:
     Type: AWS::SQS::Queue
   OrdersTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      BillingMode: PAYPERREQUEST
+      BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
       - AttributeName: orderId
         AttributeType: S
@@ -27,7 +20,12 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: receive-order
-      Handler: main
+      Runtime: provided.al2
+      MemorySize: 128
+      Timeout: 30
+      Architectures:
+      - arm64
+      Handler: bootstrap
       CodeUri: ReceiveOrderFunction
       Events:
         ApiEvent:
@@ -53,7 +51,12 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: process-order
-      Handler: main
+      Runtime: provided.al2
+      MemorySize: 128
+      Timeout: 30
+      Architectures:
+      - arm64
+      Handler: bootstrap
       CodeUri: ProcessOrderFunction
       Events:
         SQSTrigger:
@@ -81,7 +84,12 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: get-receipt
-      Handler: main
+      Runtime: provided.al2
+      MemorySize: 128
+      Timeout: 30
+      Architectures:
+      - arm64
+      Handler: bootstrap
       CodeUri: GetReceiptFunction
       Events:
         ApiEvent:

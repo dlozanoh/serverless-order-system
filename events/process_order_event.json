@@ -1,0 +1,7 @@
+{
+  "Records": [
+    {
+      "body": "{\"orderId\": \"12345\", \"customerName\": \"Alice\"}"
+    }
+  ]
+}
