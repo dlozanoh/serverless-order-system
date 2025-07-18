@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Order Processing System using Go and SAM
+
+Resources:
+
+  ProcessOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: process-order
+      Runtime: provided.al2
+      MemorySize: 128
+      Timeout: 30
+      Architectures:
+        - arm64
+      Handler: bootstrap
+      CodeUri: .
+      Events:
+        SQSTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt OrderQueue.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: OrdersTable
+          BUCKET_NAME: !Ref ReceiptsBucket
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref OrdersTable
+        - S3CrudPolicy:
+            BucketName: !Ref ReceiptsBucket

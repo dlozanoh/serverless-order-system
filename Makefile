@@ -30,17 +30,17 @@ delete:
 		--region $(REGION) \
 
 build-ReceiveOrderFunction:
-	GOOS=linux go build -o bootstrap ./cmd/receive_order/main.go
+	GOOS=linux go build -o bootstrap ReceiveOrder/main.go
 	cp ./bootstrap $(ARTIFACTS_DIR)/.
 
 build-ProcessOrderFunction:
-	GOOS=linux go build -o bootstrap ./cmd/process_order/main.go
+	GOOS=linux go build -o bootstrap ProcessOrder/main.go
 	cp ./bootstrap $(ARTIFACTS_DIR)/.
 
 build-GetReceiptFunction:
-	GOOS=linux go build -o bootstrap ./cmd/get_receipt/main.go
+	GOOS=linux go build -o bootstrap GetReceipt/main.go
 	cp ./bootstrap $(ARTIFACTS_DIR)/.
-	
+
 # add sam local invoke commands for testing
 test-receive-order:
 	sam local invoke receive-order --event $(EVENT_DIR)/receive_order_event.json

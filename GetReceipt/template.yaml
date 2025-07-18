@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Order Processing System using Go and SAM
+
+Resources:
+  GetReceiptFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: get-receipt
+      Runtime: provided.al2
+      MemorySize: 128
+      Timeout: 30
+      Architectures:
+        - arm64
+      Handler: bootstrap
+      CodeUri: .
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /receipt/{orderId}
+            Method: get
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref OrdersTable
+          BUCKET_NAME: !Ref ReceiptsBucket
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref OrdersTable
+        - S3ReadPolicy:
+            BucketName: !Ref ReceiptsBucket

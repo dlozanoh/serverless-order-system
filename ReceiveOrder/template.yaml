@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Order Processing System using Go and SAM
+
+Resources:
+
+  ReceiptsBucket:
+    Type: AWS::S3::Bucket
+
+  ## Function
+  ReceiveOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: receive-order
+      Runtime: provided.al2
+      MemorySize: 128
+      Timeout: 30
+      Architectures: 
+        - arm64
+      Handler: bootstrap      
+      CodeUri: .
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /orders
+            Method: post
+      Environment:
+        Variables:
+          QUEUE_URL: !GetAtt OrderQueue.QueueUrl
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt OrderQueue.QueueName

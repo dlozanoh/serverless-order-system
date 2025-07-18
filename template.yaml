@@ -1,5 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Transform: AWS::Serverless-2016-10-31
+Transform: 
+  - AWS::Serverless-2016-10-31
+  - AWS::LanguageExtensions
 Description: Serverless Order Processing System using Go and SAM
 
 Resources:
@@ -23,81 +25,20 @@ Resources:
   ReceiptsBucket:
     Type: AWS::S3::Bucket
 
-  ## Functions
-
-  ReceiveOrderFunction:
-    Type: AWS::Serverless::Function
+  ReceiveOrder:
+    Type: AWS::Serverless::Application
     Properties:
-      FunctionName: receive-order
-      Runtime: provided.al2
-      MemorySize: 128
-      Timeout: 30
-      Architectures: 
-        - arm64
-      Handler: bootstrap      
-      CodeUri: .
-      Events:
-        ApiEvent:
-          Type: Api
-          Properties:
-            Path: /orders
-            Method: post
-      Environment:
-        Variables:
-          QUEUE_URL: !GetAtt OrderQueue.QueueUrl
-      Policies:
-        - SQSSendMessagePolicy:
-            QueueName: !GetAtt OrderQueue.QueueName
+      Location: ./ReceiveOrder/template.yaml
+      Parameters:
+        OrdersTable: !Ref OrdersTable
+        ReceiptsBucket: !Ref ReceiptsBucket
 
-  ProcessOrderFunction:
-    Type: AWS::Serverless::Function
+  ProcessOrder:
+    Type: AWS::Serverless::Application
     Properties:
-      FunctionName: process-order
-      Runtime: provided.al2
-      MemorySize: 128
-      Timeout: 30
-      Architectures:
-        - arm64
-      Handler: bootstrap
-      CodeUri: .
-      Events:
-        SQSTrigger:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt OrderQueue.Arn
-      Environment:
-        Variables:
-          TABLE_NAME: OrdersTable
-          BUCKET_NAME: !Ref ReceiptsBucket
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref OrdersTable
-        - S3CrudPolicy:
-            BucketName: !Ref ReceiptsBucket
+      Location: ./ProcessOrder/template.yaml
 
-  GetReceiptFunction:
-    Type: AWS::Serverless::Function
+  GetReceipt:
+    Type: AWS::Serverless::Application
     Properties:
-      FunctionName: get-receipt
-      Runtime: provided.al2
-      MemorySize: 128
-      Timeout: 30
-      Architectures:
-        - arm64
-      Handler: bootstrap
-      CodeUri: .
-      Events:
-        ApiEvent:
-          Type: Api
-          Properties:
-            Path: /receipt/{orderId}
-            Method: get
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref OrdersTable
-          BUCKET_NAME: !Ref ReceiptsBucket
-      Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref OrdersTable
-        - S3ReadPolicy:
-            BucketName: !Ref ReceiptsBucket
+      Location: ./GetReceipt/template.yaml
