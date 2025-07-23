@@ -11,6 +11,7 @@ update:
 
 clean:
 	rm ./deployments
+
 build:
 	sam build -b deployments
 
@@ -33,25 +34,25 @@ delete:
 
 build-ReceiveOrderFunction:
 	go mod tidy
-	GOOS=linux GOARCH=amd64 go build -o bootstrap functions/receiveOrder/main.go
+	GOOS=linux GOARCH=amd64 go build -o bootstrap functions/receiveOrder/cmd/main.go
 	cp bootstrap $(ARTIFACTS_DIR)/bootstrap
 
 build-ProcessOrderFunction:
 	go mod tidy
-	GOOS=linux GOARCH=amd64 go build -o bootstrap functions/processOrder/main.go
+	GOOS=linux GOARCH=amd64 go build -o bootstrap functions/processOrder/cmd/main.go
 	cp bootstrap $(ARTIFACTS_DIR)/bootstrap
 
 build-GetReceiptFunction:
 	go mod tidy
-	GOOS=linux GOARCH=amd64 go build -o bootstrap function/getReceipt/main.go
+	GOOS=linux GOARCH=amd64 go build -o bootstrap function/getReceipt/cmd/main.go
 	cp bootstrap $(ARTIFACTS_DIR)/bootstrap
 
 # add sam local invoke commands for testing
 test-receive-order:
-	sam local invoke receive-order --event $(EVENT_DIR)/receive_order_event.json
+	sam local invoke receive-order --e $(EVENT_DIR)/receive_order_event.json -t deployments/receiveOrder/template.yaml
 
 test-process-order:
-	sam local invoke process-order --event $(EVENT_DIR)/process_order_event.json
+	sam local invoke process-order --e $(EVENT_DIR)/process_order_event.json -t deployments/processOrder/template.yaml
 
 test-get-receipt:
-	sam local invoke get-receipt --event $(EVENT_DIR)/get_receipt_event.json
+	sam local invoke get-receipt --e $(EVENT_DIR)/get_receipt_event.json -t deployments/getReceipt/template.yaml
