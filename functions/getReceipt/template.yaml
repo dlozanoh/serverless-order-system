@@ -3,29 +3,30 @@ Transform: AWS::Serverless-2016-10-31
 Description: Serverless Order Processing System using Go and SAM
 
 Resources:
-
-  ProcessOrderFunction:
+  GetReceiptFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: process-order
+      CodeUri: ../..
+      Handler: bootstrap      
       Runtime: provided.al2
+      AutoPublishAlias: live
+      FunctionName: get-receipt
       MemorySize: 128
       Timeout: 30
       Architectures:
         - arm64
-      Handler: bootstrap
-      CodeUri: .
       Events:
-        SQSTrigger:
-          Type: SQS
+        ApiEvent:
+          Type: Api
           Properties:
-            Queue: !GetAtt OrderQueue.Arn
+            Path: /receipt/{orderId}
+            Method: get
       Environment:
         Variables:
-          TABLE_NAME: OrdersTable
+          TABLE_NAME: !Ref OrdersTable
           BUCKET_NAME: !Ref ReceiptsBucket
       Policies:
-        - DynamoDBCrudPolicy:
+        - DynamoDBReadPolicy:
             TableName: !Ref OrdersTable
-        - S3CrudPolicy:
+        - S3ReadPolicy:
             BucketName: !Ref ReceiptsBucket

@@ -1,44 +1,44 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Transform: 
-  - AWS::Serverless-2016-10-31
-  - AWS::LanguageExtensions
+Transform:
+- AWS::Serverless-2016-10-31
+- AWS::LanguageExtensions
 Description: Serverless Order Processing System using Go and SAM
-
 Resources:
-
-  ## Queues, Tables, and Buckets
   OrderQueue:
     Type: AWS::SQS::Queue
-
   OrdersTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: OrdersTable
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: orderId
-          AttributeType: S
+      - AttributeName: orderId
+        AttributeType: S
       KeySchema:
-        - AttributeName: orderId
-          KeyType: HASH
-
+      - AttributeName: orderId
+        KeyType: HASH
   ReceiptsBucket:
     Type: AWS::S3::Bucket
-
   ReceiveOrder:
     Type: AWS::Serverless::Application
     Properties:
-      Location: ./functions/receiveOrder/template.yaml
+      Location: ReceiveOrder/template.yaml
       Parameters:
-        OrdersTable: !Ref OrdersTable
-        ReceiptsBucket: !Ref ReceiptsBucket
-
+        OrdersTable:
+          Ref: OrdersTable
+        ReceiptsBucket:
+          Ref: ReceiptsBucket
+    Metadata:
+      SamResourceId: ReceiveOrder
   ProcessOrder:
     Type: AWS::Serverless::Application
     Properties:
-      Location: ./functions/processOrder/template.yaml
-
+      Location: ProcessOrder/template.yaml
+    Metadata:
+      SamResourceId: ProcessOrder
   GetReceipt:
     Type: AWS::Serverless::Application
     Properties:
-      Location: ./functions/getReceipt/template.yaml
+      Location: GetReceipt/template.yaml
+    Metadata:
+      SamResourceId: GetReceipt

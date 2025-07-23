@@ -9,6 +9,8 @@ EVENT_DIR=testdata/events
 update:
 	go mod tidy
 
+clean:
+	rm ./deployments
 build:
 	sam build -b deployments
 
@@ -30,16 +32,19 @@ delete:
 		--region $(REGION) \
 
 build-ReceiveOrderFunction:
-	GOOS=linux go build -o bootstrap ReceiveOrder/main.go
-	cp ./bootstrap $(ARTIFACTS_DIR)/.
+	go mod tidy
+	GOOS=linux GOARCH=amd64 go build -o bootstrap functions/receiveOrder/main.go
+	cp bootstrap $(ARTIFACTS_DIR)/bootstrap
 
 build-ProcessOrderFunction:
-	GOOS=linux go build -o bootstrap ProcessOrder/main.go
-	cp ./bootstrap $(ARTIFACTS_DIR)/.
+	go mod tidy
+	GOOS=linux GOARCH=amd64 go build -o bootstrap functions/processOrder/main.go
+	cp bootstrap $(ARTIFACTS_DIR)/bootstrap
 
 build-GetReceiptFunction:
-	GOOS=linux go build -o bootstrap GetReceipt/main.go
-	cp ./bootstrap $(ARTIFACTS_DIR)/.
+	go mod tidy
+	GOOS=linux GOARCH=amd64 go build -o bootstrap function/getReceipt/main.go
+	cp bootstrap $(ARTIFACTS_DIR)/bootstrap
 
 # add sam local invoke commands for testing
 test-receive-order:

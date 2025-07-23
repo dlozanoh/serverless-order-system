@@ -30,7 +30,7 @@ func init() {
 	sqsClient = sqs.NewFromConfig(cfg)
 }
 
-func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var order Order
 	err := json.Unmarshal([]byte(req.Body), &order)
 	if err != nil {
@@ -48,5 +48,5 @@ func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 }
 
 func main() {
-	lambda.Start(handler)
+	lambda.Start(Handler)
 }

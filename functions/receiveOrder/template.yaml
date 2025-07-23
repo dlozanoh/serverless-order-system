@@ -11,14 +11,15 @@ Resources:
   ReceiveOrderFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: receive-order
+      CodeUri: ../..
+      Handler: bootstrap      
       Runtime: provided.al2
+      AutoPublishAlias: live
+      FunctionName: receive-order
       MemorySize: 128
       Timeout: 30
       Architectures: 
         - arm64
-      Handler: bootstrap      
-      CodeUri: .
       Events:
         ApiEvent:
           Type: Api
