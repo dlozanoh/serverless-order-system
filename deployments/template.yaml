@@ -26,19 +26,35 @@ Resources:
       Parameters:
         OrdersTable:
           Ref: OrdersTable
-        ReceiptsBucket:
-          Ref: ReceiptsBucket
+        OrderQueueArn:
+          Fn::GetAtt:
+          - OrderQueue
+          - Arn
     Metadata:
       SamResourceId: ReceiveOrder
   ProcessOrder:
     Type: AWS::Serverless::Application
     Properties:
       Location: ProcessOrder/template.yaml
+      Parameters:
+        ReceiptsBucket:
+          Ref: ReceiptsBucket
+        OrdersTable:
+          Ref: OrdersTable
+        OrderQueueArn:
+          Fn::GetAtt:
+          - OrderQueue
+          - Arn
     Metadata:
       SamResourceId: ProcessOrder
   GetReceipt:
     Type: AWS::Serverless::Application
     Properties:
       Location: GetReceipt/template.yaml
+      Parameters:
+        ReceiptsBucket:
+          Ref: ReceiptsBucket
+        OrdersTable:
+          Ref: OrdersTable
     Metadata:
       SamResourceId: GetReceipt

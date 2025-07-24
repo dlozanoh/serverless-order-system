@@ -2,8 +2,16 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless Order Processing System using Go and SAM
 
-Resources:
+Parameters:
+  OrdersTable:
+    Type: String
+    Description: The name of the DynamoDB table for orders
 
+  OrderQueueArn:
+    Type: String
+    Description: The ARN of the SQS queue for order processing
+
+Resources:
   ReceiptsBucket:
     Type: AWS::S3::Bucket
 
@@ -28,7 +36,9 @@ Resources:
             Method: post
       Environment:
         Variables:
-          QUEUE_URL: !GetAtt OrderQueue.QueueUrl
+          QUEUE_URL: !Ref OrderQueueArn
       Policies:
         - SQSSendMessagePolicy:
             QueueName: !GetAtt OrderQueue.QueueName
+    Metadata:
+      BuildMethod: makefile

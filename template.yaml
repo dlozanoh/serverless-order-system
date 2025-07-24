@@ -9,6 +9,8 @@ Resources:
   ## Queues, Tables, and Buckets
   OrderQueue:
     Type: AWS::SQS::Queue
+    Properties:
+      QueueName: order-queue
 
   OrdersTable:
     Type: AWS::DynamoDB::Table
@@ -31,14 +33,21 @@ Resources:
       Location: ./functions/receiveOrder/template.yaml
       Parameters:
         OrdersTable: !Ref OrdersTable
-        ReceiptsBucket: !Ref ReceiptsBucket
+        OrderQueueArn: !GetAtt OrderQueue.Arn
 
   ProcessOrder:
     Type: AWS::Serverless::Application
     Properties:
       Location: ./functions/processOrder/template.yaml
+      Parameters:
+        ReceiptsBucket: !Ref ReceiptsBucket
+        OrdersTable: !Ref OrdersTable
+        OrderQueueArn: !GetAtt OrderQueue.Arn
 
   GetReceipt:
     Type: AWS::Serverless::Application
     Properties:
       Location: ./functions/getReceipt/template.yaml
+      Parameters:
+        ReceiptsBucket: !Ref ReceiptsBucket
+        OrdersTable: !Ref OrdersTable

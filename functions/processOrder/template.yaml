@@ -2,6 +2,17 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless Order Processing System using Go and SAM
 
+Parameters:
+  ReceiptsBucket:
+    Type: String
+    Description: The name of the S3 bucket for storing receipts
+  OrdersTable:
+    Type: String
+    Description: The name of the DynamoDB table for orders
+  OrderQueueArn:
+    Type: String
+    Description: The ARN of the SQS queue for order processing
+
 Resources:
 
   ProcessOrderFunction:
@@ -20,13 +31,15 @@ Resources:
         SQSTrigger:
           Type: SQS
           Properties:
-            Queue: !GetAtt OrderQueue.Arn
+            Queue: !Ref OrderQueueArn
       Environment:
         Variables:
-          TABLE_NAME: OrdersTable
+          TABLE_NAME: !Ref OrdersTable
           BUCKET_NAME: !Ref ReceiptsBucket
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref OrdersTable
         - S3CrudPolicy:
             BucketName: !Ref ReceiptsBucket
+    Metadata:
+      BuildMethod: makefile

@@ -44,7 +44,7 @@ build-ProcessOrderFunction:
 
 build-GetReceiptFunction:
 	go mod tidy
-	GOOS=linux GOARCH=amd64 go build -o bootstrap function/getReceipt/cmd/main.go
+	GOOS=linux GOARCH=amd64 go build -o bootstrap functions/getReceipt/cmd/main.go
 	cp bootstrap $(ARTIFACTS_DIR)/bootstrap
 
 # add sam local invoke commands for testing

@@ -2,6 +2,14 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless Order Processing System using Go and SAM
 
+Parameters:
+  ReceiptsBucket:
+    Type: String
+    Description: The name of the S3 bucket for storing receipts
+  OrdersTable:
+    Type: String
+    Description: The name of the DynamoDB table for orders
+    
 Resources:
   GetReceiptFunction:
     Type: AWS::Serverless::Function
@@ -30,3 +38,5 @@ Resources:
             TableName: !Ref OrdersTable
         - S3ReadPolicy:
             BucketName: !Ref ReceiptsBucket
+    Metadata:
+      BuildMethod: makefile
