@@ -29,6 +29,7 @@ A fully serverless order management backend built using **Go**, **AWS Lambda**, 
 
 ## 📁 Project Structure
 
+```text
 serverless-order-system/
 ├── template.yaml # SAM template (infrastructure)
 ├── Makefile # Build & deploy commands
@@ -38,6 +39,7 @@ serverless-order-system/
 │ └── get_receipt/ # API Gateway → signed URL
 ├── events/ # Sample test events
 ├── README.md
+```
 
 ---
 
