@@ -8,6 +8,9 @@ Parameters:
   OrderQueueArn:
     Type: String
     Description: The ARN of the SQS queue for order processing
+  OrderQueue:
+    Type: String
+    Description: The SQS queue for receiving orders
 Resources:
   ReceiptsBucket:
     Type: AWS::S3::Bucket
@@ -23,6 +26,10 @@ Resources:
       Timeout: 30
       Architectures:
       - arm64
+      Policies:
+      - SQSSendMessagePolicy:
+          QueueName:
+            Ref: OrderQueue
       Events:
         ApiEvent:
           Type: Api
@@ -31,14 +38,9 @@ Resources:
             Method: post
       Environment:
         Variables:
+          APPLICATION: receiver-order
           QUEUE_URL:
-            Ref: OrderQueueArn
-      Policies:
-      - SQSSendMessagePolicy:
-          QueueName:
-            Fn::GetAtt:
-            - OrderQueue
-            - QueueName
+            Ref: OrderQueue
     Metadata:
       BuildMethod: makefile
       SamResourceId: ReceiveOrderFunction

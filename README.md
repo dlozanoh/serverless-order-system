@@ -31,13 +31,13 @@ A fully serverless order management backend built using **Go**, **AWS Lambda**, 
 
 ```text
 serverless-order-system/
-├── template.yaml # SAM template (infrastructure)
-├── Makefile # Build & deploy commands
-├── cmd/ # Go Lambda source code
-│ ├── receive_order/ # API Gateway → SQS
-│ ├── process_order/ # SQS → DynamoDB & S3
-│ └── get_receipt/ # API Gateway → signed URL
-├── events/ # Sample test events
+├── template.yaml       # SAM template (infrastructure)
+├── Makefile            # Build & deploy commands
+├── cmd/                # Go Lambda source code
+│ ├── receive_order/    # API Gateway → SQS
+│ ├── process_order/    # SQS → DynamoDB & S3
+│ └── get_receipt/      # API Gateway → signed URL
+├── events/             # Sample test events
 ├── README.md
 ```
 

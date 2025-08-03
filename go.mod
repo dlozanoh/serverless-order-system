@@ -1,4 +1,4 @@
-module github.com/dlozanoh/serverless-order-system
+module serverless-order-system
 
 go 1.23.3
 
@@ -27,4 +27,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.29.17
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.38.8
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/kelseyhightower/envconfig v1.4.0
 )

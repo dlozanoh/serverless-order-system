@@ -4,7 +4,7 @@ APP_NAME=order-service
 S3_BUCKET=sam-build-artifacts-bucket
 STACK_NAME=order-service-stack
 REGION=eu-west-3
-EVENT_DIR=testdata/events
+EVENT_DIR=events
 
 update:
 	go mod tidy
@@ -49,7 +49,7 @@ build-GetReceiptFunction:
 
 # add sam local invoke commands for testing
 test-receive-order:
-	sam local invoke receive-order --e $(EVENT_DIR)/receive_order_event.json -t deployments/receiveOrder/template.yaml
+	sam local invoke --env-vars local.json receive-order --event $(EVENT_DIR)/receive_order_event.json -t deployments/receiveOrder/template.yaml
 
 test-process-order:
 	sam local invoke process-order --e $(EVENT_DIR)/process_order_event.json -t deployments/processOrder/template.yaml

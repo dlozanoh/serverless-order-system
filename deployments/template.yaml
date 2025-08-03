@@ -6,6 +6,8 @@ Description: Serverless Order Processing System using Go and SAM
 Resources:
   OrderQueue:
     Type: AWS::SQS::Queue
+    Properties:
+      QueueName: order-queue
   OrdersTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -30,6 +32,8 @@ Resources:
           Fn::GetAtt:
           - OrderQueue
           - Arn
+        OrderQueue:
+          Ref: OrderQueue
     Metadata:
       SamResourceId: ReceiveOrder
   ProcessOrder:

@@ -4,6 +4,7 @@ Transform:
   - AWS::LanguageExtensions
 Description: Serverless Order Processing System using Go and SAM
 
+
 Resources:
 
   ## Queues, Tables, and Buckets
@@ -34,6 +35,7 @@ Resources:
       Parameters:
         OrdersTable: !Ref OrdersTable
         OrderQueueArn: !GetAtt OrderQueue.Arn
+        OrderQueue: !Ref OrderQueue
 
   ProcessOrder:
     Type: AWS::Serverless::Application

@@ -10,6 +10,10 @@ Parameters:
   OrderQueueArn:
     Type: String
     Description: The ARN of the SQS queue for order processing
+  
+  OrderQueue:
+    Type: String
+    Description: The SQS queue for receiving orders
 
 Resources:
   ReceiptsBucket:
@@ -28,6 +32,9 @@ Resources:
       Timeout: 30
       Architectures: 
         - arm64
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !Ref OrderQueue
       Events:
         ApiEvent:
           Type: Api
@@ -36,9 +43,7 @@ Resources:
             Method: post
       Environment:
         Variables:
-          QUEUE_URL: !Ref OrderQueueArn
-      Policies:
-        - SQSSendMessagePolicy:
-            QueueName: !GetAtt OrderQueue.QueueName
+          APPLICATION: receiver-order
+          QUEUE_URL: !Ref OrderQueue
     Metadata:
       BuildMethod: makefile

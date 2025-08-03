@@ -1,0 +1,14 @@
+{
+  "receive-order": {
+    "QUEUE_URL": "https://sqs.eu-west-3.amazonaws.com/887155143792/order-queue"
+  },
+  "ProcessOrderFunction": {
+    "TABLE_NAME": "TABLE_NAME",
+    "BUCKET_NAME": "amzn-s3-demo-bucket",
+    "ORDER_QUEUE_ARN": "arn:aws:sqs:eu-west-3:000000000000:order-queue"
+  },
+  "GetReceipt": {
+    "ORDERS_TABLE": "localtable",
+    "RECEIPTS_BUCKET": "amzn-s3-demo-bucket"
+  }
+}
