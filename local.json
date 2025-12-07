@@ -1,5 +1,5 @@
 {
-  "receive-order": {
+  "ReceiveOrderFunction": {
     "QUEUE_URL": "https://sqs.eu-west-3.amazonaws.com/887155143792/order-queue"
   },
   "ProcessOrderFunction": {

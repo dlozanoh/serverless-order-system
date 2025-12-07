@@ -17,6 +17,7 @@ type ClientImpl struct {
 }
 
 func New(client *sqs.Client, queueUrl string) *ClientImpl {
+	log.Printf("Creating SQS client with Queue URL: %s", queueUrl)
 	return &ClientImpl{
 		client:   client,
 		queueUrl: queueUrl,
